@@ -18,14 +18,14 @@ from bs4 import BeautifulSoup
 
 # Main program
 
-page = requests.get("https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html")
-soup = BeautifulSoup(page.content, 'html.parser')
 
-book = bk.Book("", soup)
+book = bk.Book("https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html")
 
-var = bk.getBookTable(soup)
-print(len(var))
-print(var)    
+print(book.url)
+print(book.upc)
+print(book.title)
+print(book.priceInclude)
+print(book.reviewRating)
 
 
 
