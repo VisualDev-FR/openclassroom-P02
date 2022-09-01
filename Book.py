@@ -1,53 +1,50 @@
+from ntpath import join
+from tokenize import String
 from typing_extensions import Self
+from unittest.util import strclass
 from bs4 import BeautifulSoup
 
 class Book:
 
-    soup:BeautifulSoup = None
-    productInfos = []
     url = ""
+    upc  = ""
+    title = ""
+    priceInclude = 0
+    priceExclude = 0
+    availableCount = 0
+    description = ""
+    category = ""
+    reviewRating = 0
+    imageUrl = ""
 
     def __init__(self, url, soup:BeautifulSoup) -> None:
+        
+        productInfos = soup.find(class_="table table-striped").find_all("td")
+
         self.url = url
-        self.soup = soup
-        self.productInfos = soup.find(class_="table table-striped").find_all("td")
+        self.upc = productInfos[0]
+        self.title = soup.find("li", class_="active").string
+        self.priceInclude = productInfos[3]
+        self.priceExclude = productInfos[2]
+        self.availableCount = productInfos[5]
+        self.description = ""
+        self.category = ""
+        self.reviewRating = 0
+        self.imageUrl = ""
 
-    @classmethod
-    def getProductPageUrl(cls):
-        return cls.url
+    def toString(cls):
 
-    @classmethod
-    def getUPC(cls):
-        return cls.productInfos[0]
+        strContent = [None] * 10
 
-    @classmethod
-    def getBookTitle(cls):
-        return cls.soup.find("li", class_="active").string
+        strContent[0] = cls.url
+        strContent[1] = cls.upc
+        strContent[2] = cls.title
+        strContent[3] = cls.priceInclude
+        strContent[4] = cls.priceExclude
+        strContent[5] = cls.availableCount
+        strContent[6] = cls.description
+        strContent[7] = cls.category
+        strContent[8] = cls.reviewRating
+        strContent[9] = cls.imageUrl
 
-    @classmethod
-    def getPriceInclude(cls):
-        return cls.productInfos[3]
-
-    @classmethod
-    def getPriceExclude(cls):
-        return cls.productInfos[2]
-
-    @classmethod
-    def getAvailableCount(cls):
-        return cls.productInfos[5]
-
-    @classmethod
-    def getDescription(cls):
-        return        
-
-    @classmethod
-    def getCategory(cls):
-        return
-
-    @classmethod
-    def getReviewRating(cls):
-        return
-
-    @classmethod
-    def getImageUrl(cls):
-        return
+        return "\n".join(strContent)
