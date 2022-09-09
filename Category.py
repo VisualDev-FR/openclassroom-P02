@@ -1,4 +1,7 @@
+from fileinput import filename
+from Book import Book
 from Page import Page
+import csv
 
 """ Headers :
 
@@ -23,6 +26,21 @@ class Category(Page):
         self.__category = category
         self.__booksURL = []
         self.__readBookURLs()
+
+    def writeCSV(cls, fileLocation):
+
+        fileName = fileLocation + cls.__category + ".csv"
+
+        fichier = open(fileName, "wb")
+        fichier.write(str(cls.__getHeaders()).encode('utf8'))
+
+        for urlBook in cls.__booksURL:
+            book = Book(urlBook, cls.__category)
+            fichier.write(book.toString())
+
+        fichier.close()
+
+        print("printing csv : '" + cls.__category + "' done.")
 
     def __readBookURLs(cls):
 
@@ -54,4 +72,35 @@ class Category(Page):
 
     def getBookURLs(cls):
         return cls.__booksURL
+
+    def __getHeaders(cls):
+
+        headers = [None] * 10
+
+        headers[0] = "product_page_url"
+        headers[1] = "universal_ product_code (upc)"
+        headers[2] = "title"
+        headers[3] = "price_including_tax"
+        headers[4] = "price_excluding_tax"
+        headers[5] = "number_available"
+        headers[6] = "product_description"
+        headers[7] = "category"
+        headers[8] = "review_rating"
+        headers[9] = "image_url"
+
+        return ";".join(headers) + "\n"
+
+    def print(cls):
+
+        print(cls.__category, ": nb Results =", len(cls.__booksURL))
+        index = 0
+
+        for urlBook in cls.__booksURL:
+            index += 1
+            #book = Book(urlBook, cls.__category)
+            #print("     " + "%02d" % index, book.getTitle())
+
+            print("     " + "%02d" % index, urlBook)
+        
+        print(" ")            
     
