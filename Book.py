@@ -1,65 +1,45 @@
+from dataclasses import replace
 from bs4 import BeautifulSoup
-import requests
+from Page import Page
 
-class Book:
+class Book(Page):
 
-    url = ""
-    upc  = ""
-    title = ""
-    priceInclude = ""
-    priceExclude = ""
-    availableCount = ""
-    description = ""
-    category = ""
-    reviewRating = ""
-    imageUrl = ""
+    def __init__(self, url, category) -> None:
 
-    def __init__(self, url) -> None:
+        super().__init__(url)
 
-        page = requests.get(url)
-        soup = BeautifulSoup(page.content, 'html.parser')
+        soup = BeautifulSoup(self._content, 'html.parser')
         
-        productInfos = soup.find(class_="table table-striped").find_all('td')
+        productInfos = soup.find(class_="table table-striped").find_all('td')        
 
-        self.url = url
-        self.upc = productInfos[0].get_text()
-        self.title = soup.find("li", class_="active").string
-        self.priceInclude = productInfos[3].get_text()
-        self.priceExclude = productInfos[2].get_text()
-        self.availableCount = productInfos[5].get_text()
-        self.description = ""
-        self.category = ""
-        self.reviewRating = self.__parseRate(soup.find(class_="icon-star").parent.attrs.get('class')[1])
-        self.imageUrl = ""
+        self.__upc = productInfos[0].get_text()
+        self.__title = soup.find("li", class_="active").string
+        self.__priceInclude = productInfos[3].get_text()
+        self.__priceExclude = productInfos[2].get_text()
+        self.__availableCount = productInfos[5].get_text()
+        self.__description = soup.find("meta", attrs={'name':'description'}).get('content') 
+        self.__category = category
+        self.__reviewRating = self._parseRate(soup.find(class_="icon-star").parent.attrs.get('class')[1])
+        self.__imageUrl = self._parseImageURL(soup.find(class_="item active").find("img").get('src'))
 
-    @staticmethod
-    def __parseRate(strRate):
-        if strRate.lower() == "one":
-            return 1
-        elif strRate.lower() == "two":
-            return 2
-        elif strRate.lower() == "three":
-            return 3
-        elif strRate.lower() == "four":
-            return 4
-        elif strRate.lower() == "five":
-            return 5
-        else:
-            return 0
+
+
+    def printDescription(cls):
+        print(cls.__description)
 
     def toString(cls):
 
         strContent = [None] * 10
 
-        strContent[0] = cls.url
-        strContent[1] = cls.upc
-        strContent[2] = cls.title
-        strContent[3] = cls.priceInclude
-        strContent[4] = cls.priceExclude
-        strContent[5] = cls.availableCount
-        strContent[6] = cls.description
-        strContent[7] = cls.category
-        strContent[8] = cls.reviewRating
-        strContent[9] = cls.imageUrl
+        strContent[0] = cls._url
+        strContent[1] = cls.__upc
+        strContent[2] = cls.__title
+        strContent[3] = cls.__priceInclude
+        strContent[4] = cls.__priceExclude
+        strContent[5] = cls.__availableCount
+        strContent[6] = cls.__description
+        strContent[7] = cls.__category
+        strContent[8] = str(cls.__reviewRating)
+        strContent[9] = cls.__imageUrl
 
         return "\n".join(strContent)

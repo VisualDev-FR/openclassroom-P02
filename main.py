@@ -1,6 +1,10 @@
+from opcode import hasname
 import requests
-import Book as bk
 from bs4 import BeautifulSoup
+
+from Book import Book
+from Category import Category
+from Page import Page
 
 """ Headers :
 
@@ -18,14 +22,17 @@ from bs4 import BeautifulSoup
 
 # Main program
 
+""" 
+cat = ctg.Category("https://books.toscrape.com/catalogue/category/books/mystery_3/page-2.html", "Mystery")
 
-book = bk.Book("https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html")
+#cat.readBooks("https://books.toscrape.com/catalogue/category/books/mystery_3/page-2.html")
 
-print(book.url)
-print(book.upc)
-print(book.title)
-print(book.priceInclude)
-print(book.reviewRating)
+book = bk.Book("https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html", "Mystery")
 
+print(book.toString())
+ """
 
 
+page = Page("https://books.toscrape.com/catalogue/category/books/mystery_3/index.html")
+
+print(page.getNextURL())
