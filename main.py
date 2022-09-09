@@ -1,38 +1,32 @@
 from opcode import hasname
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as bs
 
 from Book import Book
 from Category import Category
 from Page import Page
 
-""" Headers :
+bookScrappingURL = "https://books.toscrape.com/index.html"
 
-    headers[0] = "product_page_url"
-    headers[1] = "universal_ product_code (upc)"
-    headers[2] = "title"
-    headers[3] = "price_including_tax"
-    headers[4] = "price_excluding_tax"
-    headers[5] = "number_available"
-    headers[6] = "product_description"
-    headers[7] = "category"
-    headers[8] = "review_rating"
-    headers[9] = "image_url"
-"""
+blankCategories = bs(requests.get(bookScrappingURL).content, 'html.parser').find('ul', class_='nav nav-list').find_all('li')
 
-# Main program
+# cd .\Desktop\OpenClassrooms\P02\openclassroom-P02\
 
-""" 
-cat = ctg.Category("https://books.toscrape.com/catalogue/category/books/mystery_3/page-2.html", "Mystery")
+for blankCat in blankCategories:
+    
+    strCat = bs(str(blankCat), 'html.parser').find('a').get_text().replace("    ","").replace("\n","")
+    urlCat = "https://books.toscrape.com/" + bs(str(blankCat), 'html.parser').find('a').get('href')
 
-#cat.readBooks("https://books.toscrape.com/catalogue/category/books/mystery_3/page-2.html")
+    if strCat != "Books":
 
-book = bk.Book("https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html", "Mystery")
+        category = Category(urlCat, strCat)        
 
-print(book.toString())
- """
+        print(strCat, ": nb Results =", len(category.getBookURLs()))
+        index = 0
 
-
-page = Page("https://books.toscrape.com/catalogue/category/books/mystery_3/index.html")
-
-print(page.getNextURL())
+        for urlBook in category.getBookURLs():
+            index += 1
+            book = Book(urlBook, strCat)
+            print("     " + "%02d" % index, book.getTitle())
+        
+        print(" ")

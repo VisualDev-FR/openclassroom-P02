@@ -1,5 +1,4 @@
-import sys
-import math
+#from dataclasses import replace
 import requests
 from bs4 import BeautifulSoup as bs
 
@@ -10,17 +9,32 @@ class Page:
         self._content = requests.get(url).content
 
     def hasNextPage(cls):
+        # does the page has a 'next' button ?
         soup = bs(cls._content, 'html.parser')
-        return len(soup.find_all('a', class_='next')) > 0
+        return len(soup.find_all(class_='next')) > 0
 
-    def getNextURL(cls):
-        
-        # https://books.toscrape.com/catalogue/category/books/mystery_3/index.html
+    def _getNextURL(cls):
 
+        # Find the index of the next page
         nextIndex = bs(cls._content, 'html.parser').find(class_='next').find('a').get('href')
+
+        # Split the url in order to concatenate it with the next index
         nextURL = str(cls._url).split("//")[1].split("/")
         nextURL[len(nextURL) - 1] = nextIndex
+
+        # concatenate the full url
         return "https://" + "/".join(nextURL)
+
+    def _setPage(cls, url):
+        cls._url = url
+        cls._content = requests.get(url).content
+
+    def _getHtmlParser(cls, strContent):
+        return bs(strContent, 'html.parser')
+
+    @staticmethod
+    def _parsBookURL(strBookUrl):
+        return "https://books.toscrape.com/catalogue/" + strBookUrl.replace("../", "")
 
     @staticmethod
     def _parseImageURL(strImageUrl):

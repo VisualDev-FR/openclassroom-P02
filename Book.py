@@ -1,5 +1,3 @@
-from dataclasses import replace
-from bs4 import BeautifulSoup
 from Page import Page
 
 class Book(Page):
@@ -7,8 +5,7 @@ class Book(Page):
     def __init__(self, url, category) -> None:
 
         super().__init__(url)
-
-        soup = BeautifulSoup(self._content, 'html.parser')
+        soup = self._getHtmlParser(self._content)
         
         productInfos = soup.find(class_="table table-striped").find_all('td')        
 
@@ -26,6 +23,9 @@ class Book(Page):
 
     def printDescription(cls):
         print(cls.__description)
+
+    def getTitle(cls):
+        return cls.__title
 
     def toString(cls):
 

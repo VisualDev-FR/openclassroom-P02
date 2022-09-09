@@ -1,32 +1,57 @@
-from turtle import bk
-from bs4 import BeautifulSoup
-import requests
 from Page import Page
+
+""" Headers :
+
+    headers[0] = "product_page_url"
+    headers[1] = "universal_ product_code (upc)"
+    headers[2] = "title"
+    headers[3] = "price_including_tax"
+    headers[4] = "price_excluding_tax"
+    headers[5] = "number_available"
+    headers[6] = "product_description"
+    headers[7] = "category"
+    headers[8] = "review_rating"
+    headers[9] = "image_url"
+"""
 
 class Category(Page):
 
     def __init__(self, url, category) -> None:
 
-        page = requests.get(url)
-        soup = BeautifulSoup(page.content, 'html.parser')
+        super().__init__(url)
 
-        self.__url = url
         self.__category = category
-        self.__resultsCount = int(soup.find(class_="form-horizontal").find("strong").get_text())
         self.__booksURL = []
+        self.__readBookURLs()
 
-    def readBooks(cls, url):   
+    def __readBookURLs(cls):
 
-        page = requests.get(url) 
-        soup = BeautifulSoup(page.content, 'html.parser')        
+        # we keep the category url + 1st page content in memory
 
-        ls = soup.find('ol', class_='row').find_all("li")
+        currentPage = cls._url
+        currentContent = cls._content
 
-        for i in range(len(ls)):            
-            subSoup = BeautifulSoup(str(ls[i]), 'html.parser')
-            cls.__booksURL.append(subSoup.find('a').get("href"))
+        while True:
 
-        print("len = " + str(len(cls.__booksURL)))
+            pageBooks = cls._getHtmlParser(cls._content).find('ol', class_='row').find_all("li")
+
+            for i in range(len(pageBooks)):            
+                bookUrl = cls._getHtmlParser(str(pageBooks[i])).find('a').get("href")
+                cls.__booksURL.append(cls._parsBookURL(bookUrl))
+
+            if cls.hasNextPage():
+                cls._setPage(cls._getNextURL())
+            else:
+                break
         
-    def printResults(cls):
-        print(cls.__resultsCount)
+        # we set back the category url + 1st page content before exiting the function
+
+        cls._url = currentPage
+        cls._content = currentContent        
+
+    def getCategory(cls):
+        return cls.__category
+
+    def getBookURLs(cls):
+        return cls.__booksURL
+    
