@@ -1,3 +1,6 @@
+from dataclasses import replace
+import sys
+from encodings import utf_8
 from Page import Page
 
 class Book(Page):
@@ -14,7 +17,7 @@ class Book(Page):
         self.__priceInclude = productInfos[3].get_text()
         self.__priceExclude = productInfos[2].get_text()
         self.__availableCount = productInfos[5].get_text()
-        self.__description = soup.find("meta", attrs={'name':'description'}).get('content') 
+        self.__description = soup.find("meta", attrs={'name':'description'}).get('content').replace("\n", " ")
         self.__category = category
         self.__reviewRating = self._parseRate(soup.find(class_="icon-star").parent.attrs.get('class')[1])
         self.__imageUrl = self._parseImageURL(soup.find(class_="item active").find("img").get('src'))
@@ -31,15 +34,15 @@ class Book(Page):
 
         strContent = [None] * 10
 
-        strContent[0] = cls._url
-        strContent[1] = cls.__upc
-        strContent[2] = cls.__title
-        strContent[3] = cls.__priceInclude
-        strContent[4] = cls.__priceExclude
-        strContent[5] = cls.__availableCount
-        strContent[6] = cls.__description
-        strContent[7] = cls.__category
+        strContent[0] = str(cls._url)
+        strContent[1] = str(cls.__upc)
+        strContent[2] = str(cls.__title)
+        strContent[3] = str(cls.__priceInclude)
+        strContent[4] = str(cls.__priceExclude)
+        strContent[5] = str(cls.__availableCount)
+        strContent[6] = str(cls.__description)
+        strContent[7] = str(cls.__category)
         strContent[8] = str(cls.__reviewRating)
-        strContent[9] = cls.__imageUrl
+        strContent[9] = str(cls.__imageUrl)
 
-        return "\n".join(strContent)
+        return str(";".join(strContent) + "\n").encode('utf8')
