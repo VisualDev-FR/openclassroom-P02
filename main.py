@@ -7,10 +7,12 @@ from Category import Category
 from Page import Page
 
 bookScrappingURL = "https://books.toscrape.com/index.html"
-
 blankCategories = bs(requests.get(bookScrappingURL).content, 'html.parser').find('ul', class_='nav nav-list').find_all('li')
 
-# cd .\Desktop\OpenClassrooms\P02\openclassroom-P02\
+#csvDirectory = input("Please specifie a valid path, to generate csv files : ")
+#csvDirectory = "C:\Users\menan\Desktop\OpenClassrooms\P02\openclassroom-P02\csv"
+
+csvDirectory = "C:/Users/menan/Desktop/OpenClassrooms/P02/openclassroom-P02/csv/"
 
 for blankCat in blankCategories:
     
@@ -19,14 +21,6 @@ for blankCat in blankCategories:
 
     if strCat != "Books":
 
-        category = Category(urlCat, strCat)        
-
-        print(strCat, ": nb Results =", len(category.getBookURLs()))
-        index = 0
-
-        for urlBook in category.getBookURLs():
-            index += 1
-            book = Book(urlBook, strCat)
-            print("     " + "%02d" % index, book.getTitle())
-        
-        print(" ")
+        category = Category(urlCat, strCat)
+        category.writeCSV(csvDirectory)
+        #category.print()
