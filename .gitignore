@@ -1,3 +1,4 @@
 env/
 csv/
 gitStatus.txt
+__pycache__

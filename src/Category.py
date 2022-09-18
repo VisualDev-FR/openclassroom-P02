@@ -1,21 +1,7 @@
-from fileinput import filename
+import os
+
 from Book import Book
 from Page import Page
-import csv
-
-""" Headers :
-
-    headers[0] = "product_page_url"
-    headers[1] = "universal_ product_code (upc)"
-    headers[2] = "title"
-    headers[3] = "price_including_tax"
-    headers[4] = "price_excluding_tax"
-    headers[5] = "number_available"
-    headers[6] = "product_description"
-    headers[7] = "category"
-    headers[8] = "review_rating"
-    headers[9] = "image_url"
-"""
 
 class Category(Page):
 
@@ -29,18 +15,28 @@ class Category(Page):
 
     def writeCSV(cls, fileLocation):
 
-        fileName = fileLocation + cls.__category + ".csv"
+        catDir = os.path.join(fileLocation, cls.__category)
+        fileName = os.path.join(catDir, cls.__category + ".csv")
+
+        try:
+            os.mkdir(catDir)
+        except:
+            pass
 
         fichier = open(fileName, "wb")
         fichier.write(str(cls.__getHeaders()).encode('utf8'))
 
+        print(cls.__category, ": nb Results =", len(cls.__booksURL))
+        index = 0
+
         for urlBook in cls.__booksURL:
-            book = Book(urlBook, cls.__category)
+            book = Book(urlBook, cls.__category)            
             fichier.write(book.toString())
+            book.printImage(catDir)
+            index += 1
+            print("     " + "%02d" % index, urlBook)            
 
-        fichier.close()
-
-        print("printing csv : '" + cls.__category + "' done.")
+        print(" ")
 
     def __readBookURLs(cls):
 
@@ -89,18 +85,3 @@ class Category(Page):
         headers[9] = "image_url"
 
         return ";".join(headers) + "\n"
-
-    def print(cls):
-
-        print(cls.__category, ": nb Results =", len(cls.__booksURL))
-        index = 0
-
-        for urlBook in cls.__booksURL:
-            index += 1
-            #book = Book(urlBook, cls.__category)
-            #print("     " + "%02d" % index, book.getTitle())
-
-            print("     " + "%02d" % index, urlBook)
-        
-        print(" ")            
-    

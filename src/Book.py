@@ -1,6 +1,7 @@
-from dataclasses import replace
-import sys
-from encodings import utf_8
+import string
+import re
+import requests
+
 from Page import Page
 
 class Book(Page):
@@ -22,7 +23,17 @@ class Book(Page):
         self.__reviewRating = self._parseRate(soup.find(class_="icon-star").parent.attrs.get('class')[1])
         self.__imageUrl = self._parseImageURL(soup.find(class_="item active").find("img").get('src'))
 
+    def __parseTitle(cls):
+        return re.sub("[^a-zA-Z0-9]", "_", cls.__title) # regex removing all charachters differents from letters / numbers
 
+    def printImage(cls, directoryPath:string):
+
+        filename = directoryPath + "/" + cls.__parseTitle() + ".png"
+        image = requests.get(cls.__imageUrl)
+
+        file = open(filename, "wb")
+        file.write(image.content)
+        file.close
 
     def printDescription(cls):
         print(cls.__description)
