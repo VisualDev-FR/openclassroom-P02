@@ -18,7 +18,7 @@ class Book(Page):
         self.__priceInclude = productInfos[3].get_text()
         self.__priceExclude = productInfos[2].get_text()
         self.__availableCount = productInfos[5].get_text()
-        self.__description = soup.find("meta", attrs={'name':'description'}).get('content').replace("\n", " ")
+        self.__description = soup.find("meta", attrs={'name':'description'}).get('content').replace("\n", " ").replace(';', ',')
         self.__category = category
         self.__reviewRating = self._parseRate(soup.find(class_="icon-star").parent.attrs.get('class')[1])
         self.__imageUrl = self._parseImageURL(soup.find(class_="item active").find("img").get('src'))

@@ -34,7 +34,7 @@ class Category(Page):
             fichier.write(book.toString())
             book.printImage(catDir)
             index += 1
-            print("     " + "%02d" % index, urlBook)            
+            print("     " + "%02d" % index, book.getTitle())            
 
         print(" ")
 
