@@ -15,9 +15,9 @@ class Book(Page):
 
         self.__upc = productInfos[0].get_text()
         self.__title = soup.find("li", class_="active").string
-        self.__priceInclude = productInfos[3].get_text()
-        self.__priceExclude = productInfos[2].get_text()
-        self.__availableCount = productInfos[5].get_text()
+        self.__priceInclude = re.findall("[0-9.0-9]+", productInfos[3].get_text())[0] #re.findall('[0-9]+', mString)[0]
+        self.__priceExclude = re.findall("[0-9.0-9]+", productInfos[2].get_text())[0]
+        self.__availableCount = re.findall("[0-9]+", productInfos[5].get_text())[0]
         self.__description = soup.find("meta", attrs={'name':'description'}).get('content').replace("\n", " ").replace(';', ',')
         self.__category = category
         self.__reviewRating = self._parseRate(soup.find(class_="icon-star").parent.attrs.get('class')[1])
